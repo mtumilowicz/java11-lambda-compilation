@@ -17,7 +17,7 @@ public class LambdaCompilationTest {
     @Test
     public void lambdaClass() {
         assertThat(new LambdaCompilation().return_lambda_class(), 
-                containsString("LambdaCompilation$$Lambda$40"));
+                containsString("LambdaCompilation$$Lambda$"));
     }
 
     @Test
