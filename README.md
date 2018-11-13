@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/mtumilowicz/java11-lambda-compilation.svg?branch=master)](https://travis-ci.com/mtumilowicz/java11-lambda-compilation)
+
 # java11-lambda-compilation
 
 _Reference_: https://www.logicbig.com/tutorials/core-java-tutorial/java-8-enhancements/java-lambda-functional-aspect.html  
