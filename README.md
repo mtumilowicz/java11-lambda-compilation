@@ -9,7 +9,7 @@ more compactly.
 * Lambda expressions enable you to treat functionality as method argument.
 
 # introduction
-Lambda Expressions are not completely Syntactic Sugar, meaning compiler 
+Lambda Expressions are not completely syntactic sugar - compiler 
 doesn't translate them into something which is already understood by JVM.  
 
 _Remark_: An example of syntactic sugar in Java is enum.
@@ -18,14 +18,13 @@ Lambda syntax written by the developer is desugared into JVM level
 instructions generated during compilation, meaning the actual 
 responsibility of constructing lambda is bootstrapped to runtime.
 
-The term "bootstrapping" in this context means that it prepares 
+The term "bootstrapping" means that it prepares 
 everything necessary to actually execute the job later.
 
 # compile time
-Instead of generating direct bytecode for lambda (like proposed anonymous 
-class syntactic sugar approach), compiler declares a recipe 
-(via `invokeDynamic` instructions) and delegates the real construction 
-approach to runtime.
+Instead of generating direct bytecode for lambda - compiler declares 
+a recipe (via `invokeDynamic` instructions) and delegates the 
+real construction approach to runtime.
 
 ## phases
 1. Generate an `invokedynamic` call site (called lambda factory) - this 
@@ -34,7 +33,8 @@ runtime.
 1. Lambda body code is generated within an instance or static desugared 
 private method which has the same parameters and return type as the 
 lambda's functional interface abstract method.
-	* **Capturing** - the lambda doesn’t access any variables defined outside its body.
+	* **Capturing** - the lambda doesn’t access any variables defined 
+	outside its body.
 		```
 		Function<String, Integer> f = s -> Integer.parseInt(s);
 		
@@ -42,7 +42,8 @@ lambda's functional interface abstract method.
 			return Integer.parseInt(s);
 		}
 		```
-	* **Non-capturing** - the lambda accesses variables defined outside its body.
+	* **Non-capturing** - the lambda accesses variables defined outside 
+	its body.
 		```
 		int offset = 100;
 		Function<String, Integer> f = s -> Integer.parseInt(s) + offset;
@@ -54,7 +55,7 @@ lambda's functional interface abstract method.
 
 _Remark_: The linkage to this method is done via `invokespecial` or 
 `invokestatic` instructions by the compiler.  
-_Remark_: However this translation strategy is not set in stone because 
+_Remark_: Any translation strategy is not set in stone because 
 the use of the invokedynamic instruction gives the compiler the 
 flexibility to choose different implementation strategies in the future. 
 For instance, the captured values could be boxed in an array or, if the 
@@ -77,23 +78,17 @@ This is one time only call and necessary for lambda object construction
 during runtime. Bootstrap method also creates a `CallSite` instance 
 that can be used at runtime to execute lambda method.
 
-JVM chooses a strategy to construct lambda. That strategy may involve 
-anonymous inner class generation or `MethodHandle` (another dynamic 
-language feature added in Java 7, similar to C function pointer that 
-points to an executable code) or dynamic proxies or whatever is good 
-in performance. `invokedynamic` turns that choice into pure JVM 
-implementation details, hence separating that decision from compile 
-time bytecode.
+JVM chooses a strategy to construct lambda, `invokedynamic` turns 
+that choice into pure JVM implementation details, hence separating 
+that decision from compile time bytecode.
 
-* Runtime class type of a lambda: it depends on the above mentioned 
-strategy specific to JVM implementation.
 * `this` will print the enclosing class - because unlike anonymous 
 classes they are just functional methods and have no meanings of 
 `this` for themselves.
 
 # project description
 * We will be testing:
-    * this
+    * this of lambda
     * lambda class
     * exceptions thrown from lambda
     
