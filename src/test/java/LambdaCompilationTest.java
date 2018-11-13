@@ -10,16 +10,14 @@ public class LambdaCompilationTest {
 
     @Test
     public void thisTest() {
-        LambdaCompilation lambdaCompilation = new LambdaCompilation();
-
-        assertThat(lambdaCompilation.return_this(), containsString("LambdaCompilation"));
+        assertThat(new LambdaCompilation().return_this(), 
+                containsString("LambdaCompilation"));
     }
 
     @Test
     public void lambdaClass() {
-        LambdaCompilation lambdaCompilation = new LambdaCompilation();
-
-        assertThat(lambdaCompilation.return_lambda_class(), containsString("LambdaCompilation$$Lambda$40"));
+        assertThat(new LambdaCompilation().return_lambda_class(), 
+                containsString("LambdaCompilation$$Lambda$40"));
     }
 
     @Test
