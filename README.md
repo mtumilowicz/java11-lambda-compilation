@@ -91,32 +91,64 @@ strategy specific to JVM implementation.
 classes they are just functional methods and have no meanings of 
 `this` for themselves.
 
-# example
-```
-public class LambdaTest {
-
-   public void aTestMethod() {
-       Runnable runnable = () -> {
-           System.out.println("this " + this); // 1
-           throw new RuntimeException(); // 2
-       };
-       System.out.println("class:  " + runnable.getClass()); // 3
-       runnable.run();
-   }
-
-   public static void main(String[] args) {
-       LambdaTest lambdaTest = new LambdaTest();
-       lambdaTest.aTestMethod();
-   }
-}
-```
-
-1. Enclosing class - `LambdaTest`
-1. Exception:
-```
-Exception in thread "main" java.lang.RuntimeException
-    at LambdaTest.lambda$aTestMethod$0(LambdaTest.java:6)
-    at LambdaTest.aTestMethod(LambdaTest.java:9)
-    at LambdaTest.main(LambdaTest.java:14)
-```
-1. It's not `Runnable`, it looks like: `com.logicbig.tests.LambdaTest$$Lambda/381259350`
+# project description
+* We will be testing:
+    * this
+    * lambda class
+    * exceptions thrown from lambda
+    
+* We provide base class `LambdaCompilation`
+    ```
+    class LambdaCompilation {
+        
+        String return_this() {
+            Supplier<String> supplier = this::toString;
+    
+            return supplier.get();
+        }
+    
+        String return_lambda_class() {
+            Supplier<String> supplier = this::toString;
+    
+            return supplier.getClass().toString();
+        }
+        
+        void lambda_exception() {
+            Supplier<String> supplier = () -> {throw new RuntimeException();};
+            
+            supplier.get();
+        }
+    }
+    ```
+* And test class `LambdaCompilationTest`, where
+    * this:
+        ```
+        @Test
+        public void thisTest() {
+            assertThat(new LambdaCompilation().return_this(), containsString("LambdaCompilation"));
+        }    
+        ```
+    * lambda class
+        ```
+        @Test
+        public void lambdaClass() {
+            assertThat(new LambdaCompilation().return_lambda_class(), 
+                    containsString("LambdaCompilation$$Lambda$40"));
+        }    
+        ```
+    * exceptions thrown from lambda
+        ```
+        @Test
+        public void exception() {
+            LambdaCompilation lambdaCompilation = new LambdaCompilation();
+            
+            try {
+                lambdaCompilation.lambda_exception();
+            } catch (RuntimeException ex) {
+                assertThat(ex.getStackTrace()[0].toString(), containsString("LambdaCompilation.lambda$lambda_exception$0"));
+                assertThat(ex.getStackTrace()[1].toString(), containsString("LambdaCompilation.lambda_exception"));
+                assertThat(ex.getStackTrace()[2].toString(), containsString("LambdaCompilationTest.exception"));
+                ex.printStackTrace();
+            }
+        }    
+        ```
